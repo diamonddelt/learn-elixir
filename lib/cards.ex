@@ -31,4 +31,11 @@ defmodule Cards do
     def deal(deck, number) do
         Enum.split(deck, number)
     end
+
+    # Writes a given deck to a file on the local filesystem
+    # Uses native Erlang code to encode the data structure into a suitable format before saving
+    def save(deck, filename) do
+        binary = :erlang.term_to_binary(deck)
+        File.write(filename, binary)
+    end
 end
