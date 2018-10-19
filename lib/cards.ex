@@ -24,7 +24,7 @@ defmodule Cards do
         Enum.member?(deck, card)
     end
 
-    # use Enum.split()/2 to return a tuple
+    # use Enum.split/2 to return a tuple
     # 1) the modified deck with "number" of cards removed
     # 2) the cards removed from the deck, in another list
     # keeping immutability in mind, there is no modification to either of the arguments in this function
@@ -37,5 +37,17 @@ defmodule Cards do
     def save(deck, filename) do
         binary = :erlang.term_to_binary(deck)
         File.write(filename, binary)
+    end
+
+    # Loads a deck from the local filesystem
+    # Uses native Erland code to decode the data structure and return it
+    # Uses case statement to handle IO read errors
+    def load(filename) do
+        {status, deck} = File.read(filename)
+
+        case status do
+            :ok -> :erlang.binary_to_term(deck)
+            :error -> "Invalid file name"
+        end
     end
 end
