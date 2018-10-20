@@ -34,6 +34,7 @@ defmodule Cards do
 
     # Writes a given deck to a file on the local filesystem
     # Uses native Erlang code to encode the data structure into a suitable format before saving
+    # Returns an :ok or :error atom on success/failure
     def save(deck, filename) do
         binary = :erlang.term_to_binary(deck)
         File.write(filename, binary)
@@ -41,13 +42,15 @@ defmodule Cards do
 
     # Loads a deck from the local filesystem
     # Uses native Erland code to decode the data structure and return it
-    # Uses case statement to handle IO read errors
+    # The case statement both compares the File.read() result to one of the case lines,
+    # as well as assigns the return value to the variable in the case line tuples if there is a match.
+    # Then, the match line will return the result of the expression after the ->
+    # Uses the "_variable" notation to ignore a result; similar to golang's _ operator
+    # Uses case statement with atoms to handle IO read errors
     def load(filename) do
-        {status, deck} = File.read(filename)
-
-        case status do
-            :ok -> :erlang.binary_to_term(deck)
-            :error -> "Invalid file name"
+        case File.read(filename) do
+            {:ok, deck} -> :erlang.binary_to_term(deck)
+            {:error, _reason} -> "Invalid file name"
         end
     end
 end
